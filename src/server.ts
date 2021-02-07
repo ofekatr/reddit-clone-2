@@ -10,6 +10,7 @@ app.use(morgan('dev'));
 
 app.get('/', (_, res) => res.send("Hello World!"));
 
+
 app.listen(5000, async () => {
     console.log(`Server is running at http://localhost:5000`);
 
