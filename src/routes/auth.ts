@@ -5,8 +5,8 @@ import jwt from 'jsonwebtoken';
 import cookie from 'cookie';
 
 import { User } from '../entities/User';
+import { authMiddleware } from '../middleware/auth';
 const ServerConfig = require('../configs/server-config');
-const { DEV_MODE } = process.env;
 
 const register = async (req: Request, res: Response) => {
   const { email, username, password } = req.body;
@@ -33,6 +33,7 @@ const register = async (req: Request, res: Response) => {
 }
 
 const login = async (req: Request, res: Response) => {
+  const { DEV_MODE } = process.env;
   const { username, password } = req.body;
   
   try { 
@@ -49,7 +50,7 @@ const login = async (req: Request, res: Response) => {
 
     const token = jwt.sign({
       username,
-    }, ServerConfig.jwtKey);
+    }, ServerConfig.JWT_Key);
 
     res.set('Set-Cookie', cookie.serialize('token', token, {
       httpOnly: true,
@@ -61,12 +62,33 @@ const login = async (req: Request, res: Response) => {
 
     return res.json({ user, token });
   } catch (e) {
-
+    console.log(e);
+    return res.status(500).json({ error: e.message });
   }
+}
+
+const me = async (req: Request, res: Response) => {
+  return res.json(res.locals.user);
+}
+
+const logout = (_: Request, res: Response) => {
+  const { DEV_MODE } = process.env;
+  res.set('Set-Cookie', cookie.serialize('token', '', {
+    httpOnly: true,
+    secure: !DEV_MODE,
+    sameSite: 'strict',
+    expires: new Date(0),
+    path: '/'
+  }));
+
+
+  return res.status(204).send();
 }
 
 const router = Router();
 router.post('/register', register);
 router.post('/login', login);
+router.get('/me', authMiddleware, me);
+router.get('/logout', authMiddleware, logout);
 
 export { router as authRoutes };
