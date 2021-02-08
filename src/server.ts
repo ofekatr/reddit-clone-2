@@ -4,6 +4,9 @@ import express from 'express';
 import morgan from 'morgan';
 import { authRoutes } from "./routes/auth";
 import { trimMiddleware } from "./middleware/trim";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 
