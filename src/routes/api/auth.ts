@@ -25,7 +25,7 @@ const register = async (req: Request, res: Response) => {
     if (errors.length > 0) return res.status(400).json(errors);
 
     await user.save();
-    return res.json(user);
+    return res.status(201).json(user);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -46,7 +46,7 @@ const login = async (req: Request, res: Response) => {
     if (!user) return res.status(404).json({ error: 'User not found.' });
 
     const passwordMatch = await bcrpyt.compare(password, user.password)
-    if (!passwordMatch) res.status(401).json({ error: 'Invalid credentials.' });
+    if (!passwordMatch) return res.status(401).json({ error: 'Invalid credentials.' });
 
     const token = jwt.sign({
       username,

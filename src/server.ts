@@ -18,7 +18,7 @@ app.use(cookieParser())
 
 app.use('/', appRouter);
 
-app.listen(5000, async () => {
+export default app.listen(5000, async () => {
     console.log(`Server is running at http://localhost:5000`);
 
     try {
@@ -28,5 +28,4 @@ app.listen(5000, async () => {
     } catch (error) {
         console.log(error);
     }
-})
-
+});
