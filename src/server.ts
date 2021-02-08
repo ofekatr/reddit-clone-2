@@ -4,8 +4,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
-import { trimMiddleware } from "./middleware/trim";
-import { authRoutes } from "./routes/auth";
+import { trimMiddleware } from "./middlewares/trim";
+import { appRouter } from './routes/index.router';
 
 dotenv.config();
 
@@ -16,8 +16,7 @@ app.use(morgan('dev'));
 app.use(trimMiddleware);
 app.use(cookieParser())
 
-app.get('/', (_, res) => res.send("Hello World!"));
-app.use('/api/auth', authRoutes);
+app.use('/', appRouter);
 
 app.listen(5000, async () => {
     console.log(`Server is running at http://localhost:5000`);

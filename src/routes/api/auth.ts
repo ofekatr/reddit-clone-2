@@ -4,9 +4,9 @@ import bcrpyt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import cookie from 'cookie';
 
-import { User } from '../entities/User';
-import { authMiddleware } from '../middleware/auth';
-const ServerConfig = require('../configs/server-config');
+import { User } from '../../entities/User';
+import { authMiddleware } from '../../middlewares/auth';
+const ServerConfig = require('../../configs/server-config');
 
 const register = async (req: Request, res: Response) => {
   const { email, username, password } = req.body;
@@ -73,16 +73,20 @@ const me = async (req: Request, res: Response) => {
 
 const logout = (_: Request, res: Response) => {
   const { DEV_MODE } = process.env;
-  res.set('Set-Cookie', cookie.serialize('token', '', {
-    httpOnly: true,
-    secure: !DEV_MODE,
-    sameSite: 'strict',
-    expires: new Date(0),
-    path: '/'
-  }));
 
-
-  return res.status(204).send();
+  try {
+    res.set('Set-Cookie', cookie.serialize('token', '', {
+      httpOnly: true,
+      secure: !DEV_MODE,
+      sameSite: 'strict',
+      expires: new Date(0),
+      path: '/'
+    }));
+    return res.status(204).send();
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({ error: e.message });
+  }
 }
 
 const router = Router();
